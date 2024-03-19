@@ -20,12 +20,12 @@ func main() {
 	s := flag.Int("s", 1, "sort by column")
 	flag.Parse()
 
-	katas, err := list()
+	katas, err := get()
 	if err != nil {
 		log.Fatal(err)
 	}
 	katas = filter(katas, show)
-	sortKatas(katas, *s)
+	order(katas, *s)
 	print(katas)
 }
 
@@ -68,7 +68,7 @@ func (x customSort) Len() int           { return len(x.katas) }
 func (x customSort) Less(i, j int) bool { return x.less(x.katas[i], x.katas[j]) }
 func (x customSort) Swap(i, j int)      { x.katas[i], x.katas[j] = x.katas[j], x.katas[i] }
 
-func sortKatas(katas []kata, column int) {
+func order(katas []kata, column int) {
 	sort.Sort(customSort{katas, func(x, y kata) bool {
 		switch column {
 		case 1:
@@ -113,7 +113,7 @@ func print(katas []kata) {
 	tw.Flush()
 }
 
-func list() ([]kata, error) {
+func get() ([]kata, error) {
 	url := "https://api.github.com/orgs/gokatas/repos"
 	resp, err := http.Get(url)
 	if err != nil {
