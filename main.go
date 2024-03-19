@@ -108,7 +108,7 @@ func print(katas []kata) {
 			k.Stars,
 			k.Description,
 			strings.Join(k.Topics, ", "),
-			k.HtmlUrl)
+			k.SshUrl)
 	}
 	tw.Flush()
 }
