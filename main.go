@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -17,15 +16,12 @@ func main() {
 	log.SetPrefix(os.Args[0] + ": ")
 	log.SetFlags(0)
 
-	s := flag.Int("s", 1, "sort by column")
-	flag.Parse()
-
 	katas, err := get()
 	if err != nil {
 		log.Fatal(err)
 	}
 	katas = filter(katas, show)
-	order(katas, *s)
+	sort.Sort(byName(katas))
 	print(katas)
 }
 
@@ -59,53 +55,20 @@ type kata struct {
 	Description string   `json:"description"`
 }
 
-type customSort struct {
-	katas []kata
-	less  func(x, y kata) bool
-}
+type byName []kata
 
-func (x customSort) Len() int           { return len(x.katas) }
-func (x customSort) Less(i, j int) bool { return x.less(x.katas[i], x.katas[j]) }
-func (x customSort) Swap(i, j int)      { x.katas[i], x.katas[j] = x.katas[j], x.katas[i] }
-
-func order(katas []kata, column int) {
-	sort.Sort(customSort{katas, func(x, y kata) bool {
-		switch column {
-		case 1:
-			if x.Name != y.Name {
-				return x.Name < y.Name
-			}
-		case 2:
-			if x.Size != y.Size {
-				return x.Size < y.Size
-			}
-		case 3:
-			if x.Stars != y.Stars {
-				return x.Stars > y.Stars
-			}
-		default:
-			log.Fatal("select column 1, 2 or 3")
-		}
-
-		// secondary sort
-		if x.Name != y.Name {
-			return x.Name < y.Name
-		}
-
-		return false
-	}})
-}
+func (x byName) Len() int           { return len(x) }
+func (x byName) Less(i, j int) bool { return x[i].Name < x[j].Name }
+func (x byName) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
 
 func print(katas []kata) {
-	const format = "%v\t%v\t%v\t%v\t%v\t%v\n"
+	const format = "%v\t%v\t%v\t%v\n"
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Name", "Size", "Stars", "Description", "Topics", "URL")
-	fmt.Fprintf(tw, format, "----", "----", "-----", "-----------", "------", "---")
+	fmt.Fprintf(tw, format, "Name", "Description", "Topics", "URL")
+	fmt.Fprintf(tw, format, "----", "-----------", "------", "---")
 	for _, k := range katas {
 		fmt.Fprintf(tw, format,
 			k.Name,
-			k.Size,
-			k.Stars,
 			k.Description,
 			strings.Join(k.Topics, ", "),
 			k.SshUrl)
