@@ -111,9 +111,14 @@ type kata struct {
 
 type byGoLines []kata
 
-func (x byGoLines) Len() int           { return len(x) }
-func (x byGoLines) Less(i, j int) bool { return x[i].goLines < x[j].goLines }
-func (x byGoLines) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
+func (x byGoLines) Len() int { return len(x) }
+func (x byGoLines) Less(i, j int) bool {
+	if x[i].goLines == x[j].goLines {
+		return x[i].Name < x[j].Name
+	}
+	return x[i].goLines < x[j].goLines
+}
+func (x byGoLines) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 
 func print(katas []kata) {
 	const format = "%v\t%v\t%v\t%v\t%v\n"
