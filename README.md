@@ -33,10 +33,6 @@ go test # in folders where <package>_test.go is present
 git diff
 ```
 
-> When you feel how depressingly slowly you climb, it's well to remember that Things Take Time. -- Piet Hein
-
 Repeat the read-understand-write cycle until you feel comfortable with the kata. At that point stop practicing it and move on to the next kata.
-
-> Serva ordinem et ordo servabit te.
 
 It's important to practice regularly because repetition creates habits, and habits are what enable mastery. Start by taking baby steps. Set a goal that you can meet and insert it into your daily routines. For example, practice 10 minutes every working day before lunch. At first it's fine even if you only read through one of the katas. After some time it will require much less will power to practice. Your programming moves will start looking simpler and smoother. 🥋
