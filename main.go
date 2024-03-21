@@ -100,7 +100,6 @@ func show(k kata) bool {
 
 type kata struct {
 	Name        string   `json:"name"`
-	Size        int      `json:"size"` // whoe repo size in kB?
 	SshUrl      string   `json:"ssh_url"`
 	HtmlUrl     string   `json:"html_url"`
 	CloneUrl    string   `json:"clone_url"`
@@ -117,16 +116,15 @@ func (x byGoLines) Less(i, j int) bool { return x[i].goLines < x[j].goLines }
 func (x byGoLines) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
 
 func print(katas []kata) {
-	const format = "%v\t%v\t%v\t%v\t%v\n"
+	const format = "%v\t%v\t%v\t%v\n"
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Lines", "Name", "Description", "Topics", "URL")
-	fmt.Fprintf(tw, format, "-----", "----", "-----------", "------", "---")
+	fmt.Fprintf(tw, format, "Lines", "Name", "Description", "URL")
+	fmt.Fprintf(tw, format, "-----", "----", "-----------", "---")
 	for _, k := range katas {
 		fmt.Fprintf(tw, format,
 			k.goLines,
 			k.Name,
 			k.Description,
-			strings.Join(k.Topics, ", "),
 			k.SshUrl)
 	}
 	tw.Flush()
