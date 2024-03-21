@@ -1,23 +1,23 @@
 Katas (形) are practiced in martial arts as a way to internalize and perfect techniques, so they can be executed and adapted under various circumstances without much hesitation. Let's try something similar with Go programming.
 
-Go katas is a small set of [repositories](https://github.com/orgs/gokatas/repositories) containing Go programs that are clear and simple, correct, and practical. The practice workflow is straightforward.
+Go katas is a small set of [repositories](https://github.com/orgs/gokatas/repositories) containing Go programs that are correct (true), practical (good), clear and simple (beautiful). The practice workflow is straightforward:
 
-0. Install the gokatas tool:
+0. Install the gokatas tool
 ```
 go install github.com/gokatas/gokatas@latest
 ```
-1. Select one of the Go katas and clone it, for example:
+1. Select one of the Go katas and clone it, for example
 ```
 gokatas
 git clone git@github.com:gokatas/bcounter.git
 cd bcounter
 ```
-2. **Read** and try to **understand** the code and documentation (use included links, search engines or AI):
+2. **Read** the documentation and code and try to **understand** it (use included links, search engines or AI)
 ```
 go doc [io.Writer]
 vim main.go
 ```
-3. Delete the code in a file and try to **write** it back. Check how you are doing:
+3. Delete the code in a file and try to **write** it back. Check how you are doing
 ```
 go test    # for packages with tests (package_test.go)
 go run     # for main packages (main.go)
