@@ -126,7 +126,7 @@ func print(katas []kata) {
 			k.Name,
 			k.Description,
 			strings.Join(k.Topics, " "),
-			k.SshUrl)
+			k.CloneUrl)
 	}
 	tw.Flush()
 }
