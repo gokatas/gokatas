@@ -12,7 +12,7 @@ gokatas
 git clone git@github.com:gokatas/bcounter.git
 cd bcounter
 ```
-2. **Read** and try to **understand** the code and documentation (use search engines or AI):
+2. **Read** and try to **understand** the code and documentation (use included links, search engines or AI):
 ```
 go doc [io.Writer]
 vim main.go
