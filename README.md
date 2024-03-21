@@ -22,7 +22,6 @@ cd bcounter
 ```
 go doc
 go doc io.Writer
-go doc fmt
 vi main.go # apt update && apt install vim
 ```
 
