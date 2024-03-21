@@ -1,6 +1,6 @@
 Katas (形) are practiced in martial arts as a way to internalize and perfect techniques, so they can be executed and adapted under various circumstances without much hesitation. Let's try something similar with Go programming.
 
-Go katas is a small set of [repositories](https://github.com/orgs/gokatas/repositories) containing Go programs that are clear and simple, correct, and practical. The practice workflow is straightforward:
+Go katas is a small set of [repositories](https://github.com/orgs/gokatas/repositories) containing Go programs that are clear and simple, correct, and practical. The practice workflow is straightforward.
 
 0. Install the gokatas tool:
 ```
