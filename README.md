@@ -20,15 +20,17 @@ cd bcounter
 2. **Read** the documentation and code and try to **understand** it (use included links, search engine or AI if you get stuck)
 
 ```
-go doc [io.Writer|fmt]
-vim main.go
+go doc
+go doc io.Writer
+go doc fmt
+vi main.go # apt update && apt install vim
 ```
 
 3. Delete the code in a file and try to **write** it back. Check how you are doing
 
 ```
-go test # in folders where <package>_test.go is present
 go run main.go
+go test # in folders where <package>_test.go is present
 git diff
 ```
 
