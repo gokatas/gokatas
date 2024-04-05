@@ -19,17 +19,23 @@ import (
 	"time"
 )
 
-const (
-	statsFile = "gokatas.json"
-	reposURL  = "https://api.github.com/orgs/gokatas/repos"
-)
+const reposURL = "https://api.github.com/orgs/gokatas/repos"
+
+var statsFile string
 
 func main() {
 	log.SetPrefix(os.Args[0] + ": ")
 	log.SetFlags(0)
 
-	stats := flag.Bool("stats", false, "show what you've done")
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	statsFile = filepath.Join(home, "gokatas.json")
+	flag.StringVar(&statsFile, "statsfile", statsFile, "where to keep stats")
+
 	done := flag.String("done", "", "you've just done `kata`")
+	stats := flag.Bool("stats", false, "show what you've done")
 	flag.Parse()
 
 	if *stats {
