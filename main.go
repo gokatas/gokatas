@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -99,7 +100,12 @@ func getStats(file string) (*Stats, error) {
 	}
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return nil, err
+		switch {
+		case errors.Is(err, fs.ErrNotExist):
+			return &stats, nil
+		default:
+			return nil, err
+		}
 	}
 	if err := json.Unmarshal(data, &stats.Done); err != nil {
 		return nil, err
@@ -119,20 +125,28 @@ func (stats *Stats) Print() {
 }
 
 func (stats *Stats) Store(kata string) error {
-	fi, err := os.Stat(stats.File)
+	_, err := os.Stat(stats.File)
 	if err != nil {
-		return err
-	}
-	var in []byte
-	if fi.Size() > 0 {
-		in, err = os.ReadFile(stats.File)
+		switch {
+		case errors.Is(err, fs.ErrNotExist):
+			f, err := os.Create(statsFile)
+			if err != nil {
+				return err
+			}
+			f.Close()
+		default:
+			return err
+		}
+	} else {
+		data, err := os.ReadFile(stats.File)
 		if err != nil {
 			return err
 		}
-		if err := json.Unmarshal(in, &stats.Done); err != nil {
+		if err := json.Unmarshal(data, &stats.Done); err != nil {
 			return err
 		}
 	}
+
 	stats.Done[kata] = append(stats.Done[kata], time.Now())
 	data, err := json.Marshal(stats.Done)
 	if err != nil {
