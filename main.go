@@ -125,7 +125,7 @@ func (stats *Stats) Print() {
 	fmt.Fprintf(tw, format, "Kata", "Done", "Last done")
 	fmt.Fprintf(tw, format, "----", "----", "---------")
 	for kata, dones := range stats.Done {
-		fmt.Fprintf(tw, format, kata, fmt.Sprintf("%dx", len(dones)), dones[len(dones)-1].Format("2006-01-02 15:04:05"))
+		fmt.Fprintf(tw, format, kata, fmt.Sprintf("%dx", len(dones)), dones[len(dones)-1].Format("2006-01-02 15:04"))
 	}
 	tw.Flush()
 }
