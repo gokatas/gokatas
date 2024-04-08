@@ -32,7 +32,7 @@ func main() {
 		log.Fatal(err)
 	}
 	statsFile = filepath.Join(home, "gokatas.json")
-	flag.StringVar(&statsFile, "statsfile", statsFile, "where to keep stats")
+	flag.StringVar(&statsFile, "statsfile", statsFile, "where you keep what you've done")
 
 	done := flag.String("done", "", "you've just done `kata`")
 	stats := flag.Bool("stats", false, "show what you've done")
@@ -120,11 +120,19 @@ func getStats(file string) (*Stats, error) {
 }
 
 func (stats *Stats) Print() {
+	var katas []string
+
+	for kata := range stats.Done {
+		katas = append(katas, kata)
+	}
+	sort.Strings(katas)
+
 	const format = "%v\t%v\t%v\n"
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
 	fmt.Fprintf(tw, format, "Kata", "Done", "Last done")
 	fmt.Fprintf(tw, format, "----", "----", "---------")
-	for kata, dones := range stats.Done {
+	for _, kata := range katas {
+		dones := stats.Done[kata]
 		fmt.Fprintf(tw, format, kata, fmt.Sprintf("%dx", len(dones)), dones[len(dones)-1].Format("2006-01-02 15:04"))
 	}
 	tw.Flush()
