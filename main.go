@@ -120,20 +120,20 @@ func getStats(file string) (*Stats, error) {
 }
 
 func (stats *Stats) Print() {
-	var katas []string
+	var names []string
 
 	for kata := range stats.Done {
-		katas = append(katas, kata)
+		names = append(names, kata)
 	}
-	sort.Strings(katas)
+	sort.Strings(names)
 
 	const format = "%v\t%v\t%v\n"
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Kata", "Done", "Last done")
+	fmt.Fprintf(tw, format, "Name", "Done", "Last done")
 	fmt.Fprintf(tw, format, "----", "----", "---------")
-	for _, kata := range katas {
-		dones := stats.Done[kata]
-		fmt.Fprintf(tw, format, kata, fmt.Sprintf("%dx", len(dones)), dones[len(dones)-1].Format("2006-01-02 15:04"))
+	for _, name := range names {
+		times := stats.Done[name]
+		fmt.Fprintf(tw, format, name, fmt.Sprintf("%dx", len(times)), times[len(times)-1].Format("2006-01-02 15:04"))
 	}
 	tw.Flush()
 }
