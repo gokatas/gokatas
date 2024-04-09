@@ -21,7 +21,7 @@ import (
 
 const reposURL = "https://api.github.com/orgs/gokatas/repos"
 
-var statsFile string
+var doneFile string
 
 func main() {
 	log.SetPrefix(os.Args[0] + ": ")
@@ -31,27 +31,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	statsFile = filepath.Join(home, "gokatas.json")
-	flag.StringVar(&statsFile, "statsfile", statsFile, "where you keep what you've done")
-
+	doneFile = filepath.Join(home, "gokatas.json")
+	flag.StringVar(&doneFile, "donefile", doneFile, "where you keep what you've done")
 	done := flag.String("done", "", "you've just done `kata`")
-	stats := flag.Bool("stats", false, "show what you've done")
 	flag.Parse()
-
-	if *stats {
-		ss, err := getStats(statsFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		ss.Print()
-		os.Exit(0)
-	}
 
 	katas, err := getKatas(reposURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 	katas = filter(katas, show)
+
+	if err := katas.getStats(doneFile); err != nil {
+		log.Fatal(err)
+	}
 
 	var wg sync.WaitGroup
 	for i := range katas {
@@ -79,11 +72,7 @@ func main() {
 			log.Fatalf("no such kata: %s", *done)
 		}
 
-		ss, err := getStats(statsFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if err := ss.Store(*done); err != nil {
+		if err := katas.storeStats(doneFile, *done); err != nil {
 			log.Fatal(err)
 		}
 
@@ -91,59 +80,51 @@ func main() {
 	}
 
 	sort.Sort(byGoLines(katas))
-	print(katas)
+	printKatas(katas)
 }
 
-type Stats struct {
-	File string
-	Done map[string][]time.Time
-}
+type Katas []kata
 
-func getStats(file string) (*Stats, error) {
-	stats := Stats{
-		File: file,
-		Done: make(map[string][]time.Time),
-	}
+func (katas Katas) getStats(file string) error {
 	data, err := os.ReadFile(file)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+	done := make(map[string][]time.Time)
+	if err := json.Unmarshal(data, &done); err != nil {
+		return err
+	}
+	for i := range katas {
+		katas[i].done = done[katas[i].Name]
+	}
+	return nil
+}
+
+// func (stats *Stats) Print() {
+// 	var names []string
+
+// 	for kata := range stats.Done {
+// 		names = append(names, kata)
+// 	}
+// 	sort.Strings(names)
+
+// 	const format = "%v\t%v\t%v\n"
+// 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
+// 	fmt.Fprintf(tw, format, "Name", "Done", "Last done")
+// 	fmt.Fprintf(tw, format, "----", "----", "---------")
+// 	for _, name := range names {
+// 		times := stats.Done[name]
+// 		fmt.Fprintf(tw, format, name, fmt.Sprintf("%dx", len(times)), times[len(times)-1].Format("2006-01-02 15:04"))
+// 	}
+// 	tw.Flush()
+// }
+
+func (katas Katas) storeStats(donefile, kata string) error {
+	_, err := os.Stat(donefile)
 	if err != nil {
 		switch {
 		case errors.Is(err, fs.ErrNotExist):
-			return &stats, nil
-		default:
-			return nil, err
-		}
-	}
-	if err := json.Unmarshal(data, &stats.Done); err != nil {
-		return nil, err
-	}
-	return &stats, nil
-}
-
-func (stats *Stats) Print() {
-	var names []string
-
-	for kata := range stats.Done {
-		names = append(names, kata)
-	}
-	sort.Strings(names)
-
-	const format = "%v\t%v\t%v\n"
-	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Name", "Done", "Last done")
-	fmt.Fprintf(tw, format, "----", "----", "---------")
-	for _, name := range names {
-		times := stats.Done[name]
-		fmt.Fprintf(tw, format, name, fmt.Sprintf("%dx", len(times)), times[len(times)-1].Format("2006-01-02 15:04"))
-	}
-	tw.Flush()
-}
-
-func (stats *Stats) Store(kata string) error {
-	_, err := os.Stat(stats.File)
-	if err != nil {
-		switch {
-		case errors.Is(err, fs.ErrNotExist):
-			f, err := os.Create(statsFile)
+			f, err := os.Create(doneFile)
 			if err != nil {
 				return err
 			}
@@ -151,22 +132,24 @@ func (stats *Stats) Store(kata string) error {
 		default:
 			return err
 		}
-	} else {
-		data, err := os.ReadFile(stats.File)
-		if err != nil {
-			return err
-		}
-		if err := json.Unmarshal(data, &stats.Done); err != nil {
-			return err
+	}
+
+	for _, k := range katas {
+		if k.Name == kata {
+			k.done = append(k.done, time.Now())
+			stats := make(map[string][]time.Time)
+			stats[kata] = k.done
+			data, err := json.Marshal(stats)
+			if err != nil {
+				return err
+			}
+			if err := os.WriteFile(donefile, data, 0644); err != nil {
+				return err
+			}
 		}
 	}
 
-	stats.Done[kata] = append(stats.Done[kata], time.Now())
-	data, err := json.Marshal(stats.Done)
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(stats.File, data, 0644)
+	return nil
 }
 
 func cloneAndCount(k kata) (lines int, err error) {
@@ -232,6 +215,7 @@ type kata struct {
 	Topics      []string `json:"topics"` // standard library packages
 	Description string   `json:"description"`
 	goLines     int
+	done        []time.Time
 }
 
 type byGoLines []kata
@@ -245,23 +229,41 @@ func (x byGoLines) Less(i, j int) bool {
 }
 func (x byGoLines) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 
-func print(katas []kata) {
-	const format = "%v\t%v\t%v\t%v\t%v\n"
+func printKatas(katas []kata) {
+	const format = "%v\t%v\t%v\t%v\t%v\t%v\n"
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Lines", "Name", "Description", "Standard library packages", "URL")
-	fmt.Fprintf(tw, format, "-----", "----", "-----------", "-------------------------", "---")
+	fmt.Fprintf(tw, format, "Lines", "Name", "Description", "Done", "Last done", "URL")
+	fmt.Fprintf(tw, format, "-----", "----", "-----------", "----", "---------", "---")
 	for _, k := range katas {
 		fmt.Fprintf(tw, format,
 			k.goLines,
 			k.Name,
 			k.Description,
-			strings.Join(k.Topics, " "),
+			fmt.Sprintf("%dx", len(k.done)),
+			printDone(k.done),
 			k.CloneUrl)
 	}
 	tw.Flush()
 }
 
-func getKatas(url string) ([]kata, error) {
+func printDone(done []time.Time) string {
+	if len(done) > 0 {
+		return humanize(done[len(done)-1])
+	}
+	return "never"
+}
+
+// humanize makes the time easier to read for humans.
+func humanize(t time.Time) string {
+	daysAgo := int(time.Since(t).Hours() / 24)
+	w := "day"
+	if daysAgo != 1 {
+		w += "s"
+	}
+	return fmt.Sprintf("%d %s ago", daysAgo, w)
+}
+
+func getKatas(url string) (Katas, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -273,7 +275,7 @@ func getKatas(url string) ([]kata, error) {
 		return nil, err
 	}
 
-	var katas []kata
+	var katas Katas
 	if err := json.Unmarshal(b, &katas); err != nil {
 		return nil, err
 	}
