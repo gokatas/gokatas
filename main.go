@@ -32,8 +32,9 @@ func main() {
 		log.Fatal(err)
 	}
 	doneFile = filepath.Join(home, "gokatas.json")
-	flag.StringVar(&doneFile, "donefile", doneFile, "where you keep what you've done")
+	flag.StringVar(&doneFile, "donefile", doneFile, "where to keep katas you've done")
 	done := flag.String("done", "", "you've just done `kata`")
+	sortby := flag.String("sortby", "name", "sort by `column`")
 	flag.Parse()
 
 	katas, err := getKatas(reposURL)
@@ -80,6 +81,7 @@ func main() {
 	}
 
 	sort.Sort(byGoLines(katas))
+	sortKatas(katas, sortby)
 	printKatas(katas)
 }
 
@@ -89,6 +91,9 @@ func (katas Katas) getStats(file string) error {
 	data, err := os.ReadFile(file)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
+	}
+	if len(data) == 0 {
+		return nil
 	}
 	done := make(map[string][]time.Time)
 	if err := json.Unmarshal(data, &done); err != nil {
@@ -216,6 +221,7 @@ type kata struct {
 	Description string   `json:"description"`
 	goLines     int
 	done        []time.Time
+	lastDone    time.Time
 }
 
 type byGoLines []kata
@@ -232,29 +238,42 @@ func (x byGoLines) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func printKatas(katas []kata) {
 	const format = "%v\t%v\t%v\t%v\t%v\t%v\n"
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Lines", "Name", "Description", "Done", "Last done", "URL")
-	fmt.Fprintf(tw, format, "-----", "----", "-----------", "----", "---------", "---")
+	fmt.Fprintf(tw, format, "Name", "Lines", "Description", "Done", "Last done", "URL")
+	fmt.Fprintf(tw, format, "----", "-----", "-----------", "----", "---------", "---")
 	for _, k := range katas {
 		fmt.Fprintf(tw, format,
-			k.goLines,
 			k.Name,
+			k.goLines,
 			k.Description,
 			fmt.Sprintf("%dx", len(k.done)),
-			printDone(k.done),
+			humanize(lastTime(k.done)),
 			k.CloneUrl)
 	}
 	tw.Flush()
 }
 
-func printDone(done []time.Time) string {
-	if len(done) > 0 {
-		return humanize(done[len(done)-1])
+func lastTime(times []time.Time) time.Time {
+	var last time.Time
+	for _, t := range times {
+		if t.After(last) {
+			last = t
+		}
 	}
-	return "never"
+	return last
 }
+
+// func printDone(done []time.Time) string {
+// 	if len(done) > 0 {
+// 		return humanize(done[len(done)-1])
+// 	}
+// 	return "never"
+// }
 
 // humanize makes the time easier to read for humans.
 func humanize(t time.Time) string {
+	if t.IsZero() {
+		return "never"
+	}
 	daysAgo := int(time.Since(t).Hours() / 24)
 	w := "day"
 	if daysAgo != 1 {
@@ -280,4 +299,44 @@ func getKatas(url string) (Katas, error) {
 		return nil, err
 	}
 	return katas, nil
+}
+
+type customSort struct {
+	katas Katas
+	less  func(x, y kata) bool
+}
+
+func (x customSort) Len() int           { return len(x.katas) }
+func (x customSort) Less(i, j int) bool { return x.less(x.katas[i], x.katas[j]) }
+func (x customSort) Swap(i, j int)      { x.katas[i], x.katas[j] = x.katas[j], x.katas[i] }
+
+// sortKatas sorts katas by column. Not all columns are sortable. Secondary sort
+// orders is always by kata name.
+func sortKatas(katas Katas, column *string) {
+	sort.Sort(customSort{katas, func(x, y kata) bool {
+		switch strings.ToLower(*column) {
+		case "name":
+			if x.Name != y.Name {
+				return x.Name < y.Name
+			}
+		case "lines":
+			if x.goLines != y.goLines {
+				return x.goLines < y.goLines
+			}
+		case "done":
+			if len(x.done) != len(y.done) {
+				return len(x.done) < len(y.done)
+			}
+		case "last", "last done":
+			if lastTime(x.done) != lastTime(y.done) {
+				return lastTime(x.done).After(lastTime(y.done))
+			}
+		default:
+			log.Fatalf("why would you sort by %s", *column)
+		}
+		if x.Name != y.Name {
+			return x.Name < y.Name
+		}
+		return false
+	}})
 }
