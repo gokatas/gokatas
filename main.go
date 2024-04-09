@@ -238,13 +238,13 @@ func (x byGoLines) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func printKatas(katas []kata) {
 	const format = "%v\t%v\t%v\t%v\t%v\t%v\n"
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Name", "Lines", "Description", "Done", "Last done", "URL")
-	fmt.Fprintf(tw, format, "----", "-----", "-----------", "----", "---------", "---")
+	fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done", "URL")
+	fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------", "---")
 	for _, k := range katas {
 		fmt.Fprintf(tw, format,
 			k.Name,
-			k.goLines,
 			k.Description,
+			k.goLines,
 			fmt.Sprintf("%dx", len(k.done)),
 			humanize(lastTime(k.done)),
 			k.CloneUrl)
