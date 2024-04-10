@@ -10,7 +10,7 @@ go install github.com/gokatas/gokatas@latest
 gokatas
 ```
 
-1. Select one of the Go katas and clone it; you might start with the smallest one (by lines)
+1. Select one of the Go katas and clone it; you might start with the smallest one (`gokatas -sortby lines`)
 
 ```
 git clone https://github.com/gokatas/bcounter.git # or git@github.com:gokatas/bcounter.git
