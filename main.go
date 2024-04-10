@@ -35,6 +35,7 @@ func main() {
 	flag.StringVar(&doneFile, "donefile", doneFile, "where to keep katas you've done")
 	done := flag.String("done", "", "you've just done `kata`")
 	sortby := flag.String("sortby", "name", "sort by `column`")
+	wide := flag.Bool("wide", false, "show all columns")
 	flag.Parse()
 
 	katas, err := getKatas(reposURL)
@@ -79,7 +80,7 @@ func main() {
 	}
 
 	sortKatas(katas, sortby)
-	printKatas(katas)
+	printKatas(katas, wide)
 }
 
 type Katas []Kata
@@ -201,19 +202,37 @@ type Kata struct {
 	done        []time.Time
 }
 
-func printKatas(katas Katas) {
-	const format = "%v\t%v\t%v\t%v\t%v\t%v\n"
+func printKatas(katas Katas, wide *bool) {
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done", "URL")
-	fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------", "---")
-	for _, k := range katas {
-		fmt.Fprintf(tw, format,
-			k.Name,
-			k.Description,
-			k.goLines,
-			fmt.Sprintf("%dx", len(k.done)),
-			humanize(lastTime(k.done)),
-			k.CloneUrl)
+	if *wide {
+		const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
+		fmt.Fprintf(tw, format, "Name", "Lines", "Done", "Last done", "URL", "Description", "Standard library packages")
+		fmt.Fprintf(tw, format, "----", "-----", "----", "---------", "---", "-----------", "-------------------------")
+		for _, k := range katas {
+			fmt.Fprintf(tw, format,
+				k.Name,
+				k.goLines,
+				fmt.Sprintf("%dx", len(k.done)),
+				humanize(lastTime(k.done)),
+				k.CloneUrl,
+				k.Description,
+				strings.Join(k.Topics, " "),
+			)
+		}
+
+	} else {
+		const format = "%v\t%v\t%v\t%v\t%v\n"
+		fmt.Fprintf(tw, format, "Name", "Lines", "Done", "Last done", "URL")
+		fmt.Fprintf(tw, format, "----", "-----", "----", "---------", "---")
+		for _, k := range katas {
+			fmt.Fprintf(tw, format,
+				k.Name,
+				k.goLines,
+				fmt.Sprintf("%dx", len(k.done)),
+				humanize(lastTime(k.done)),
+				k.CloneUrl,
+			)
+		}
 	}
 	tw.Flush()
 }
