@@ -118,19 +118,23 @@ func (katas Katas) storeStats(donefile, kata string) error {
 		}
 	}
 
-	for _, k := range katas {
-		if k.Name == kata {
-			k.done = append(k.done, time.Now())
-			stats := make(map[string][]time.Time)
-			stats[kata] = k.done
-			data, err := json.Marshal(stats)
-			if err != nil {
-				return err
-			}
-			if err := os.WriteFile(donefile, data, 0644); err != nil {
-				return err
-			}
+	for i := range katas {
+		if katas[i].Name == kata {
+			katas[i].done = append(katas[i].done, time.Now())
 		}
+	}
+
+	stats := make(map[string][]time.Time)
+	var data []byte
+	for _, kata := range katas {
+		stats[kata.Name] = kata.done
+		data, err = json.Marshal(stats)
+		if err != nil {
+			return err
+		}
+	}
+	if err := os.WriteFile(donefile, data, 0644); err != nil {
+		return err
 	}
 
 	return nil
