@@ -13,6 +13,7 @@ gokatas -h
 
 ```
 gokatas -sortby lines
+mkdir -p ~/github.com/gokatas && cd ~/github.com/gokatas
 git clone https://github.com/gokatas/bcounter.git # or git@github.com:gokatas/bcounter.git
 cd bcounter
 ```
@@ -22,7 +23,7 @@ cd bcounter
 ```
 go doc -all
 go doc io.Writer
-vi main.go
+vi main.go # or code .
 ```
 
 3. Delete the code in a file and try to **write** it back. Check how you are doing
