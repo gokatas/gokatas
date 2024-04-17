@@ -76,7 +76,6 @@ func main() {
 		if err := katas.storeStats(doneFile, *done); err != nil {
 			log.Fatal(err)
 		}
-		os.Exit(0)
 	}
 
 	sortKatas(katas, sortby)
@@ -95,7 +94,7 @@ func (katas Katas) getStats(file string) error {
 	}
 	done := make(map[string][]time.Time)
 	if err := json.Unmarshal(data, &done); err != nil {
-		return err
+		return fmt.Errorf("parsing %s: %v", file, err)
 	}
 	for i := range katas {
 		katas[i].done = done[katas[i].Name]
