@@ -33,7 +33,7 @@ func main() {
 	}
 	doneFile = filepath.Join(home, "gokatas.json")
 	flag.StringVar(&doneFile, "donefile", doneFile, "where to keep katas you've done")
-	done := flag.String("done", "", "you've just done `kata`")
+	done := flag.String("done", "", "write `kata` to donefile")
 	sortby := flag.String("sortby", "name", "sort by `column`")
 	wide := flag.Bool("wide", false, "show all columns")
 	flag.Parse()
