@@ -51,14 +51,14 @@ func main() {
 	var wg sync.WaitGroup
 	for i := range katas {
 		wg.Add(1)
-		go func() {
+		go func(i int) {
 			defer wg.Done()
 			lines, err := cloneAndCount(katas[i])
 			if err != nil {
 				log.Fatal(err)
 			}
 			katas[i].goLines = lines
-		}()
+		}(i)
 	}
 	wg.Wait()
 
