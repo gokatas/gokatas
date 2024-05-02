@@ -6,7 +6,7 @@ Go katas is a [set](https://github.com/orgs/gokatas/repositories) of small Go pr
 go install github.com/gokatas/gokatas@latest
 ```
 
-1. Select one of the katas and clone it (you might want to start with the smallest one)
+1. Select one of the katas and clone it
 
 ```
 gokatas -sortby lines -wide
@@ -14,7 +14,7 @@ git clone https://github.com/gokatas/bcounter.git # or git@github.com:gokatas/bc
 cd bcounter
 ```
 
-2. **Read** the documentation and code and try to **understand** it (use included links, search engines or AI if you get stuck)
+2. **Read** the documentation and code and try to **understand** it (use `go doc`, included links, search engines or AI if you get stuck)
 
 ```
 code .
