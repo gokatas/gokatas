@@ -14,13 +14,13 @@ git clone https://github.com/gokatas/bcounter.git # or git@github.com:gokatas/bc
 cd bcounter
 ```
 
-2. *Read* the documentation and code and try to *understand* it
+2. Read the documentation and code and try to understand it
 
 ```
 code .
 ```
 
-3. *Delete* the code in a file and try to *write* it back
+3. Delete the code in a file and try to write it back
 
 ```
 git diff
