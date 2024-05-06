@@ -1,4 +1,4 @@
-Go katas is a [set](https://github.com/orgs/gokatas/repositories) of small Go programs written by experts. They contain techniques that you can re-use when writing Go code. But first you must learn them. The practice cycle to internalize the techniques is straightforward:
+Go katas is a [set](https://github.com/orgs/gokatas/repositories) of small Go programs written by experts. They contain techniques that you can re-use when writing Go code. But first you must learn them. And then remember them. The practice cycle to internalize the techniques is straightforward:
 
 0. Install the gokatas tool
 
