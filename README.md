@@ -11,8 +11,8 @@ go install github.com/gokatas/gokatas@latest
 ```
 gokatas -sortby lines -wide
 
-git clone https://github.com/gokatas/bcounter.git
-cd bcounter
+git clone https://github.com/gokatas/<kata>.git
+cd <kata>
 ```
 
 2. Read the documentation and code and try to understand it
@@ -30,7 +30,7 @@ git diff
 4. Track your progress to stay motivated
 
 ```
-gokatas -done bcounter
+gokatas -done <kata>
 ```
 
 It's important to practice regularly because repetition creates habits, and habits are what enable mastery. Set a goal that you are able to meet and insert it into your daily routines. Start by taking baby steps. After some time it will require much less will power to practice. Your programming moves will start looking simpler and smoother. 🥋
