@@ -10,6 +10,7 @@ go install github.com/gokatas/gokatas@latest
 
 ```
 gokatas -sortby lines -wide
+
 git clone https://github.com/gokatas/bcounter.git
 cd bcounter
 ```
