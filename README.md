@@ -1,4 +1,4 @@
-Go katas is a [set](https://github.com/orgs/gokatas/repositories) of small Go programs written by experienced programmers. They contain techniques that you can re-use when writing Go code. But first you must learn them. And then remember them. The practice cycle to internalize the techniques is straightforward:
+Go katas are small [programs](https://github.com/orgs/gokatas/repositories) written by experienced programmers. They contain techniques that you can reuse for Go coding. But first you must learn them. And then remember them. The practice cycle to internalize the techniques is straightforward:
 
 0. Install the gokatas tool
 
@@ -6,7 +6,7 @@ Go katas is a [set](https://github.com/orgs/gokatas/repositories) of small Go pr
 go install github.com/gokatas/gokatas@latest
 ```
 
-1. Select one of the katas
+1. Choose a kata
 
 ```
 gokatas -sortby lines -wide
@@ -21,16 +21,16 @@ cd bcounter
 code .
 ```
 
-3. Delete the code in a file and try to write it back
+3. Delete (some of) the code and try to write it back
 
 ```
 git diff
 ```
 
-4. To keep yourself motivated track what you have done
+4. Track your progress to stay motivated
 
 ```
 gokatas -done bcounter
 ```
 
-It's important to practice regularly because repetition creates habits, and habits are what enable mastery. Start by taking baby steps. Set a goal that you are able to meet and insert it into your daily routines. After some time it will require much less will power to practice. Your programming moves will start looking simpler and smoother. 🥋
+It's important to practice regularly because repetition creates habits, and habits are what enable mastery. Set a goal that you are able to meet and insert it into your daily routines. Start by taking baby steps. After some time it will require much less will power to practice. Your programming moves will start looking simpler and smoother. 🥋
