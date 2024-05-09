@@ -127,7 +127,7 @@ func (katas Katas) storeStats(donefile, kata string) error {
 	var data []byte
 	for _, kata := range katas {
 		stats[kata.Name] = kata.done
-		data, err = json.Marshal(stats)
+		data, err = json.MarshalIndent(stats, "", "  ")
 		if err != nil {
 			return err
 		}
