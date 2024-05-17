@@ -19,6 +19,8 @@ cd <kata>
 
 ```
 code .
+
+gokatas -explain <kata>
 ```
 
 3. Delete (some of) the code and try to write it back
