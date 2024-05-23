@@ -20,7 +20,7 @@ cd <kata>
 ```
 code .
 
-gokatas -explain <kata>
+gokatas -explain "kata[ and your optional question]"
 ```
 
 3. Delete (some of) the code and try to write it back

@@ -22,7 +22,7 @@ func main() {
 	}
 	doneFile := flag.String("donefile", filepath.Join(home, "gokatas.json"), "where to write down katas you've done")
 	done := flag.String("done", "", "write down `kata` you've done")
-	explain := flag.String("explain", "", "use AI to explain `kata`")
+	explain := flag.String("explain", "", "use AI to explain `\"kata[ and your optional question]\"`")
 	sortby := flag.String("sortby", "name", "sort by `column`")
 	wide := flag.Bool("wide", false, "show all columns")
 	flag.Parse()

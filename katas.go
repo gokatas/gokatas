@@ -261,24 +261,28 @@ func humanize(t time.Time) string {
 	return fmt.Sprintf("%d %s ago", daysAgo, w)
 }
 
-func (katas Katas) explain(name string) error {
+func (katas Katas) explain(what string) error {
 	token := os.Getenv("OPENAI_API_KEY")
 	if token == "" {
 		return fmt.Errorf("set OPENAI_API_KEY environment variable")
 	}
 	client := openai.NewClient(token)
 
+	fields := strings.Fields(what)
+	kataName := fields[0]
+	question := strings.Join(fields[1:], " ")
+
 	var kata Kata
 	var found bool
 	for _, k := range katas {
-		if name == k.Name {
+		if kataName == k.Name {
 			kata = k
 			found = true
 			break
 		}
 	}
 	if !found {
-		return fmt.Errorf("no such kata: %s", name)
+		return fmt.Errorf("no such kata: %s", kataName)
 	}
 
 	input, err := getKataContent(kata.CloneUrl)
@@ -293,7 +297,7 @@ func (katas Katas) explain(name string) error {
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleUser,
-					Content: prompt + input,
+					Content: prompt + input + question,
 				},
 			},
 		},
