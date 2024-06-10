@@ -20,7 +20,7 @@ cd <kata>
 ```
 code .
 
-gokatas -explain <kata>
+gokatas -explain <kata> # we ask ChatGPT here
 ```
 
 3. Delete (some of) the code and try to write it back
