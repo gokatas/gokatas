@@ -1,16 +1,15 @@
-Go katas are small [programs](https://github.com/orgs/gokatas/repositories) written by experienced programmers (see the comments inside the programs). They contain techniques that you can use when programming in Go. To understand and remember these techniques do this simple practice cycle:
-
-0. Install the gokatas tool
+Go katas are small [programs](https://github.com/orgs/gokatas/repositories) written by experienced programmers (see the comments inside the programs). They contain techniques that you can use when programming in Go. To understand and remember these techniques install the gokatas CLI tool:
 
 ```
 go install github.com/gokatas/gokatas@latest
 ```
 
+and do this simple practice cycle:
+
 1. Choose a kata
 
 ```
 gokatas -sortby lines -wide
-
 git clone https://github.com/gokatas/<kata>.git
 cd <kata>
 ```
@@ -19,7 +18,6 @@ cd <kata>
 
 ```
 code .
-
 gokatas -explain <kata> # we ask ChatGPT here
 ```
 
