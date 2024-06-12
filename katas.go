@@ -72,6 +72,10 @@ func sortKatas(katas Katas, column *string) {
 			if x.Name != y.Name {
 				return x.Name < y.Name
 			}
+		case "desc", "description":
+			if x.Description != y.Description {
+				return x.Description < y.Description
+			}
 		case "lines":
 			if x.goLines != y.goLines {
 				return x.goLines < y.goLines
@@ -85,7 +89,7 @@ func sortKatas(katas Katas, column *string) {
 				return lastTime(x.done).After(lastTime(y.done))
 			}
 		default:
-			log.Fatalf("why would you sort by %s", *column)
+			log.Fatalf("we don't sort by %s here", *column)
 		}
 		if x.Name != y.Name {
 			return x.Name < y.Name
@@ -188,31 +192,31 @@ func printKatas(katas Katas, wide *bool) {
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
 	if *wide {
 		const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
-		fmt.Fprintf(tw, format, "Name", "Lines", "Done", "Last done", "URL", "Description", "Standard library packages")
-		fmt.Fprintf(tw, format, "----", "-----", "----", "---------", "---", "-----------", "-------------------------")
+		fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done", "URL", "Standard library packages")
+		fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------", "---", "-------------------------")
 		for _, k := range katas {
 			fmt.Fprintf(tw, format,
 				k.Name,
+				k.Description,
 				k.goLines,
 				fmt.Sprintf("%dx", len(k.done)),
 				humanize(lastTime(k.done)),
 				k.CloneUrl,
-				k.Description,
 				strings.Join(k.Topics, " "),
 			)
 		}
 
 	} else {
 		const format = "%v\t%v\t%v\t%v\t%v\n"
-		fmt.Fprintf(tw, format, "Name", "Lines", "Done", "Last done", "URL")
-		fmt.Fprintf(tw, format, "----", "-----", "----", "---------", "---")
+		fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done")
+		fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------")
 		for _, k := range katas {
 			fmt.Fprintf(tw, format,
 				k.Name,
+				k.Description,
 				k.goLines,
 				fmt.Sprintf("%dx", len(k.done)),
 				humanize(lastTime(k.done)),
-				k.CloneUrl,
 			)
 		}
 	}
