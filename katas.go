@@ -192,8 +192,8 @@ func printKatas(katas Katas, wide *bool) {
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
 	if *wide {
 		const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
-		fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done", "URL", "Standard library packages")
-		fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------", "---", "-------------------------")
+		fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done", "Standard library packages", "URL")
+		fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------", "-------------------------", "---")
 		for _, k := range katas {
 			fmt.Fprintf(tw, format,
 				k.Name,
@@ -201,8 +201,8 @@ func printKatas(katas Katas, wide *bool) {
 				k.goLines,
 				fmt.Sprintf("%dx", len(k.done)),
 				humanize(lastTime(k.done)),
-				k.CloneUrl,
 				strings.Join(k.Topics, " "),
+				k.CloneUrl,
 			)
 		}
 
