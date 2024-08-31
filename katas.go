@@ -257,12 +257,12 @@ func humanize(t time.Time) string {
 	if t.IsZero() {
 		return "never"
 	}
-	daysAgo := int(time.Since(t).Hours() / 24)
+	d := daysAgo(t)
 	w := "day"
-	if daysAgo != 1 {
+	if d != 1 {
 		w += "s"
 	}
-	return fmt.Sprintf("%d %s ago", daysAgo, w)
+	return fmt.Sprintf("%d %s ago", d, w)
 }
 
 func (katas Katas) explain(name string) error {

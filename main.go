@@ -2,10 +2,12 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 const reposURL = "https://api.github.com/orgs/gokatas/repos"
@@ -23,6 +25,7 @@ func main() {
 	doneFile := flag.String("donefile", filepath.Join(home, "gokatas.json"), "where to write down katas you've done")
 	done := flag.String("done", "", "write down `kata` you've done")
 	explain := flag.String("explain", "", "use AI to explain `kata`")
+	report := flag.Bool("report", false, "print also activity report")
 	sortby := flag.String("sortby", "name", "sort by `column`")
 	wide := flag.Bool("wide", false, "show all columns")
 	flag.Parse()
@@ -76,4 +79,13 @@ func main() {
 
 	sortKatas(katas, sortby)
 	printKatas(katas, wide)
+
+	if *report {
+		fmt.Println()
+		b := Boundary{
+			Since: time.Now().Add(-time.Hour * 24 * 90),
+			Until: time.Now(),
+		}
+		printReport(katas, b)
+	}
 }
