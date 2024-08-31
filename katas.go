@@ -84,6 +84,10 @@ func sortKatas(katas Katas, column *string) {
 			if len(x.done) != len(y.done) {
 				return len(x.done) < len(y.done)
 			}
+		case "first", "first done":
+			if firstTime(x.done) != firstTime(y.done) {
+				return firstTime(x.done).After(firstTime(y.done))
+			}
 		case "last", "last done":
 			if lastTime(x.done) != lastTime(y.done) {
 				return lastTime(x.done).After(lastTime(y.done))
@@ -191,15 +195,16 @@ func show(k Kata) bool {
 func printKatas(katas Katas, wide *bool) {
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
 	if *wide {
-		const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
-		fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done", "Standard library packages", "URL")
-		fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------", "-------------------------", "---")
+		const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
+		fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "First done", "Last done", "Standard library packages", "URL")
+		fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "----------", "---------", "-------------------------", "---")
 		for _, k := range katas {
 			fmt.Fprintf(tw, format,
 				k.Name,
 				k.Description,
 				k.goLines,
 				fmt.Sprintf("%dx", len(k.done)),
+				humanize(firstTime(k.done)),
 				humanize(lastTime(k.done)),
 				strings.Join(k.Topics, " "),
 				k.CloneUrl,
@@ -240,6 +245,20 @@ func countGo(dir string) (lines int, err error) {
 	}
 	err = filepath.WalkDir(dir, visit)
 	return
+}
+
+func firstTime(times []time.Time) time.Time {
+	var first time.Time
+	for i, t := range times {
+		if i == 0 {
+			first = t
+			continue
+		}
+		if t.Before(first) {
+			first = t
+		}
+	}
+	return first
 }
 
 func lastTime(times []time.Time) time.Time {
