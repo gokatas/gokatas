@@ -23,14 +23,7 @@ func buildHeader(start, end time.Time) string {
 }
 
 func daysAgo(t time.Time) int {
-	milliSeconds := int(time.Since(t).Milliseconds()) // milliseconds per day: 1000 * 60 * 60 * 24
-	if milliSeconds < 0 {
-		return -1
-	}
-	if milliSeconds/(1000*60*60) < 24 {
-		return 0
-	}
-	return milliSeconds / (1000 * 60 * 60 * 24)
+	return int(time.Since(t).Round(time.Hour*24).Hours() / 24)
 }
 
 func getDay(i int) string {
