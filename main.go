@@ -22,10 +22,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cal := flag.Bool("cal", false, "print also activity calendar")
 	done := flag.String("done", "", "write down `kata` you've done")
 	doneFile := flag.String("donefile", filepath.Join(home, "gokatas.json"), "where to write down katas you've done")
 	explain := flag.String("explain", "", "use AI to explain `kata`")
+	report := flag.Bool("report", false, "print also activity report")
 	sortby := flag.String("sortby", "name", "sort by `column`")
 	wide := flag.Bool("wide", false, "print wider output")
 	flag.Parse()
@@ -80,7 +80,7 @@ func main() {
 	sortKatas(katas, sortby)
 	printKatas(katas, wide)
 
-	if *cal {
+	if *report {
 		fmt.Println()
 		until := time.Now()
 		since := time.Now().Add(-time.Hour * 24 * 90)
