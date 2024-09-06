@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -66,6 +67,14 @@ func main() {
 		for _, k := range katas {
 			if k.Name == *done {
 				found = true
+				if time.Since(lastTime(k.done)).Seconds() < 300 {
+					fmt.Print("Last done less than 5 mins ago. Are you sure? ")
+					var input string
+					fmt.Scanln(&input)
+					if !strings.HasPrefix(strings.ToLower(input), "y") {
+						os.Exit(1)
+					}
+				}
 				break
 			}
 		}
