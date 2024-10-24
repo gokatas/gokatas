@@ -27,7 +27,7 @@ type Kata struct {
 	HtmlUrl     string   `json:"html_url"`
 	CloneUrl    string   `json:"clone_url"`
 	Stars       int      `json:"stargazers_count"`
-	Topics      []string `json:"topics"` // standard library packages
+	Topics      []string `json:"topics"`
 	Description string   `json:"description"`
 	goLines     int
 	done        []time.Time
@@ -192,8 +192,8 @@ func printKatas(katas Katas, wide *bool) {
 	tw := new(tabwriter.Writer).Init(os.Stdout, 0, 8, 2, ' ', 0)
 	if *wide {
 		const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
-		fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done", "Standard library packages", "URL")
-		fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------", "-------------------------", "---")
+		fmt.Fprintf(tw, format, "Name", "Description", "Lines", "Done", "Last done", "Topics", "URL")
+		fmt.Fprintf(tw, format, "----", "-----------", "-----", "----", "---------", "------", "---")
 		for _, k := range katas {
 			fmt.Fprintf(tw, format,
 				k.Name,
