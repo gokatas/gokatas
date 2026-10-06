@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,7 +8,6 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,8 +15,6 @@ import (
 	"strings"
 	"text/tabwriter"
 	"time"
-
-	"github.com/sashabaranov/go-openai"
 )
 
 type Kata struct {
@@ -267,97 +263,4 @@ func humanize(t time.Time) string {
 		w += "s"
 	}
 	return fmt.Sprintf("%d %s ago", d, w)
-}
-
-func (katas Katas) explain(name string) error {
-	token := os.Getenv("OPENAI_API_KEY")
-	if token == "" {
-		return fmt.Errorf("set OPENAI_API_KEY environment variable")
-	}
-	client := openai.NewClient(token)
-
-	var kata Kata
-	var found bool
-	for _, k := range katas {
-		if name == k.Name {
-			kata = k
-			found = true
-			break
-		}
-	}
-	if !found {
-		return fmt.Errorf("no such kata: %s", name)
-	}
-
-	input, err := getKataContent(kata.CloneUrl)
-	if err != nil {
-		return err
-	}
-
-	resp, err := client.CreateChatCompletion(
-		context.Background(),
-		openai.ChatCompletionRequest{
-			Model: openai.GPT3Dot5Turbo,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Role:    openai.ChatMessageRoleUser,
-					Content: prompt + input,
-				},
-			},
-		},
-	)
-
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(resp.Choices[0].Message.Content)
-	return nil
-}
-
-func getKataContent(kataUrl string) (string, error) {
-	path, err := clone(kataUrl)
-	if err != nil {
-		return "", fmt.Errorf("cloning %s: %v", path, err)
-	}
-
-	code, err := getGoCode(path)
-	if err != nil {
-		return "", err
-	}
-	return code, nil
-}
-
-func getGoCode(path string) (string, error) {
-	var content string
-	err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
-		if !d.IsDir() && filepath.Ext(path) == ".go" {
-			b, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			content += string(b)
-		}
-		return nil
-	})
-	return content, err
-}
-
-func clone(kataUrl string) (path string, err error) {
-	u, err := url.Parse(kataUrl)
-	if err != nil {
-		return "", err
-	}
-
-	path, err = os.MkdirTemp("", "kata")
-	if err != nil {
-		return path, err
-	}
-
-	err = exec.Command("git", "clone", u.String(), path).Run()
-	if err != nil {
-		return path, fmt.Errorf("executing 'git clone %s %s': %v", kataUrl, path, err)
-	}
-
-	return path, nil
 }

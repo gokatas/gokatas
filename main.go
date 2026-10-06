@@ -25,7 +25,6 @@ func main() {
 	}
 	done := flag.String("done", "", "write down `kata` you've done")
 	doneFile := flag.String("donefile", filepath.Join(home, "gokatas.json"), "where to write down katas you've done")
-	explain := flag.String("explain", "", "use AI to explain `kata`")
 	report := flag.Bool("report", false, "print also activity report")
 	sortby := flag.String("sortby", "name", "sort by `column`")
 	wide := flag.Bool("wide", false, "print wider output")
@@ -54,13 +53,6 @@ func main() {
 		}(i)
 	}
 	wg.Wait()
-
-	if *explain != "" {
-		if err := katas.explain(*explain); err != nil {
-			log.Fatal(err)
-		}
-		os.Exit(0)
-	}
 
 	if *done != "" {
 		var found bool
