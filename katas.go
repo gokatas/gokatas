@@ -47,6 +47,10 @@ func getKatas(url string) (Katas, error) {
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("GET %s: %s: %s", url, resp.Status, b)
+	}
+
 	var katas Katas
 	if err := json.Unmarshal(b, &katas); err != nil {
 		return nil, err
